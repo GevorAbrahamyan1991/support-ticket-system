@@ -3,6 +3,11 @@
 @section('title', 'Welcome')
 
 @section('content')
-    <h1 class="text-primary">Welcome to the Support Ticket System</h1>
-    <p>This page uses Bootstrap styles!</p>
+    <div class="container" id="welcome-component">
+        <div class="row">
+            <div class="col-xl-8 offset-2">
+                <img src="{{ asset("images/CoverImage.webp") }}" class="img-fluid w-full h-full" alt="">
+            </div>
+        </div>
+    </div>
 @endsection
