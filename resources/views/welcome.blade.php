@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Welcome')
+@section('title', 'Support Ticket System')
 
 @section('content')
     <div class="container" id="welcome-component">
