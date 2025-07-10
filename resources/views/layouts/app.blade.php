@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>@yield('title', 'Support Ticket System')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
@@ -22,9 +23,9 @@
                         </li>
                     @else
                         <li class="nav-item">
-                            <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-inline">
                                 @csrf
-                                <button type="submit" class="btn btn-link nav-link bg-danger" style="display:inline;cursor:pointer;">Logout</button>
+                                <button type="submit" class="btn btn-link nav-link bg-danger" style="display:inline;cursor:pointer;">Logout <span id="logout-spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span></button>
                             </form>
                         </li>
                     @endguest
