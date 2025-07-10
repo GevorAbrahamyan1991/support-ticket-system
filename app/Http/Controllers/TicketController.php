@@ -63,9 +63,9 @@ class TicketController extends Controller
         ]);
         $data['customer_id'] = Auth::id();
         $data['status'] = 'open';
-        // Get client IP
+        
         $ip = $request->ip();
-        // Call 3rd-party API for geolocation (example: ip-api.com)
+
         $location = null;
         try {
             $response = Http::get("http://ip-api.com/json/{$ip}");
@@ -80,7 +80,7 @@ class TicketController extends Controller
             'location' => $location,
         ];
         $ticket = Ticket::create($data);
-        // Queue email notification to all agents
+        
         SendTicketNotification::dispatch($ticket, 'created');
         if ($request->ajax()) {
             return response()->json(['ticket' => $ticket, 'redirect' => route('tickets.show', $ticket)]);
@@ -92,7 +92,6 @@ class TicketController extends Controller
     {
         $this->authorizeRole('agent');
         $ticket->agent_id = Auth::id();
-        $ticket->status = 'in_progress';
         $ticket->save();
         $ticket->load('agent');
         if (request()->ajax()) {
@@ -108,7 +107,6 @@ class TicketController extends Controller
         $ticket->status = $request->status;
         $ticket->save();
         $ticket->load('agent');
-        // TODO: queue email
         if ($request->ajax()) {
             return response()->json(['success' => true, 'ticket' => $ticket]);
         }
