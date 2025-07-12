@@ -22,6 +22,21 @@
                             <a class="nav-link" href="{{ route('register') }}">Sign Up</a>
                         </li>
                     @else
+                        @if(auth()->user()->isAgent())
+                            <li class="nav-item">
+                                <a class="link" href="{{ route('tickets.index') }}">Tickets</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="link" href="{{ route('users.index') }}">Users</a>
+                            </li>
+                        @elseif(auth()->user()->isCustomer())
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('tickets.index') }}">Tickets</a>
+                            </li>
+                        @endif
+                        <li class="nav-item d-flex align-items-center">
+                            <span class="nav-link disabled">{{ auth()->user()->name }}</span>
+                        </li>
                         <li class="nav-item">
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-inline">
                                 @csrf
