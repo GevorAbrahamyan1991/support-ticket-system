@@ -6,7 +6,7 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>Users</h2>
 </div>
-<table class="table table-bordered">
+<x-table>
     <thead>
         <tr>
             <th>ID</th>
@@ -21,13 +21,21 @@
                 <td>{{ $user->id }}</td>
                 <td>{{ $user->name }}</td>
                 <td>{{ $user->email }}</td>
-                <td>{{ ucfirst($user->role) }}</td>
+                <td>
+                    @if($user->role === 'agent')
+                        <x-badge type="primary">Agent</x-badge>
+                    @elseif($user->role === 'customer') 
+                        <x-badge type="secondary">Customer</x-badge>
+                    @else
+                        <x-badge type="info">{{ ucfirst($user->role) }}</x-badge>
+                    @endif
+                </td>
             </tr>
         @empty
             <tr><td colspan="4">No users found.</td></tr>
         @endforelse
     </tbody>
-</table>
+</x-table>
 <div class="d-flex justify-content-center">
     {{ $users->links() }}
 </div>

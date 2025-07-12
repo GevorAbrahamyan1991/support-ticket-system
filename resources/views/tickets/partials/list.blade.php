@@ -1,4 +1,4 @@
-<table class="table table-bordered">
+<x-table>
     <thead>
         <tr>
             <th>ID</th>
@@ -17,25 +17,25 @@
                 <td>{{ $ticket->title }}</td>
                 <td>
                     @if($ticket->status == 'open')
-                        <span class="badge bg-success"><i class="bi bi-unlock"></i> Open</span>
+                        <x-badge type="success" icon="unlock">Open</x-badge>
                     @elseif($ticket->status == 'in_progress')
-                        <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i> In Progress</span>
+                        <x-badge type="warning" class="text-dark" icon="hourglass-split">In Progress</x-badge>
                     @elseif($ticket->status == 'closed')
-                        <span class="badge bg-secondary"><i class="bi bi-lock"></i> Closed</span>
+                        <x-badge type="secondary" icon="lock">Closed</x-badge>
                     @endif
                 </td>
                 <td>{{ $ticket->category }}</td>
                 <td>{{ $ticket->customer->name ?? '-' }}</td>
                 <td>{{ $ticket->agent->name ?? '-' }}</td>
                 <td>
-                    <a href="{{ route('tickets.show', $ticket) }}" class="btn btn-sm btn-info"><i class="bi bi-eye"></i> View</a>
+                    <x-button class="btn-info btn-sm" :href="route('tickets.show', $ticket)" icon="eye">View</x-button>
                 </td>
             </tr>
         @empty
             <tr><td colspan="7">No tickets found.</td></tr>
         @endforelse
     </tbody>
-</table>
+</x-table>
 
 <div class="d-flex justify-content-center">
     {{ $tickets->links() }}

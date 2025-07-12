@@ -5,58 +5,18 @@
 @section('content')
 <div class="row justify-content-center mt-4">
     <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">Submit a New Ticket</div>
-            <div class="card-body">
-                <form method="POST" action="{{ route('tickets.store') }}" id="create-ticket-form">
-                    @csrf
-                    <div class="mb-3">
-                        <label for="title" class="form-label">Title</label>
-                        <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title') }}" required>
-                        @error('title')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                    </div>
-                    <div class="mb-3">
-                        <label for="category" class="form-label">Category</label>
-                        <input type="text" class="form-control @error('category') is-invalid @enderror" id="category" name="category" value="{{ old('category') }}" required>
-                        @error('category')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                    </div>
-                    <div class="mb-3">
-                        <label for="description" class="form-label">Description</label>
-                        <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="5" required>{{ old('description') }}</textarea>
-                        @error('description')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                    </div>
-                    <button type="submit" class="btn card-button w-100">
-                        <i class="bi bi-send"></i> Submit Ticket
-                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="create-ticket-spinner"></span>
-                    </button>
-                </form>
-            </div>
-        </div>
+        <x-card :header="'Submit a New Ticket'">
+            <form method="POST" action="{{ route('tickets.store') }}" id="create-ticket-form" data-ajax="true">
+                @csrf
+                <x-input name="title" label="Title" :value="old('title')" :required="true" :autofocus="true" />
+                <x-input name="category" label="Category" :value="old('category')" :required="true" />
+                <x-textarea name="description" label="Description" :value="old('description')" rows="5" :required="true" />
+                <div class="ajax-feedback mb-2"></div>
+                <x-button type="submit" icon="send" class="card-button w-100" id="create-ticket-btn">
+                    Submit Ticket
+                </x-button>
+            </form>
+        </x-card>
     </div>
 </div>
-@endsection
-
-@push('scripts')
-<script>
-$(document).on('submit', 'form#create-ticket-form', function(e) {
-    e.preventDefault();
-    let form = $(this);
-    let btn = form.find('button[type=submit]');
-    let spinner = btn.find('.spinner-border');
-    btn.prop('disabled', true);
-    spinner.removeClass('d-none');
-    $('#global-loading').fadeIn(150);
-    $.post(form.attr('action'), form.serialize(), function(data) {
-        if (data.redirect) {
-            window.location.href = data.redirect;
-        }
-    }).fail(function(xhr) {
-        alert('Failed to create ticket.');
-    }).always(function() {
-        btn.prop('disabled', false);
-        spinner.addClass('d-none');
-        $('#global-loading').fadeOut(150);
-    });
-});
-</script>
-@endpush 
+@endsection 

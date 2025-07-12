@@ -6,24 +6,24 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2><i class="bi bi-card-list"></i> Tickets</h2>
     @if(auth()->user()->isCustomer())
-        <a href="{{ route('tickets.create') }}" class="btn btn-primary"><i class="bi bi-plus-circle"></i> New Ticket</a>
+        <x-button class="btn-primary" :href="route('tickets.create')" icon="plus-circle">New Ticket</x-button>
     @endif
 </div>
 <form id="filter-form" method="GET" class="row g-3 mb-3">
     <div class="col-md-3">
-        <select name="status" class="form-select">
+        <x-select name="status" label="Status">
             <option value="">All Statuses</option>
             <option value="open" {{ request('status') == 'open' ? 'selected' : '' }}>Open</option>
             <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>In Progress</option>
             <option value="closed" {{ request('status') == 'closed' ? 'selected' : '' }}>Closed</option>
-        </select>
+        </x-select>
     </div>
     <div class="col-md-3">
-        <input type="text" name="category" class="form-control" placeholder="Category" value="{{ request('category') }}">
+        <x-input name="category" label="Category" :value="request('category')" />
     </div>
-    <div class="col-md-3">
-        <button type="submit" class="btn btn-secondary"><i class="bi bi-funnel"></i> Filter</button>
-        <a href="{{ route('tickets.index') }}" class="btn btn-danger"><i class="bi bi-x-circle"></i> Reset</a>
+    <div class="col-md-3 mt-5">
+        <x-button type="submit" class="btn-secondary" icon="funnel">Filter</x-button>
+        <x-button :href="route('tickets.index')" class="btn-danger" icon="x-circle">Reset</x-button>
     </div>
 </form>
 <div id="tickets-loading" class="text-center my-3" style="display:none;">
