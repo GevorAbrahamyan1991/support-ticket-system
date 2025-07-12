@@ -119,7 +119,11 @@ class TicketController extends Controller
         $ticket->save();
         $ticket->load('agent');
         if ($request->ajax()) {
-            return response()->json(['success' => true, 'ticket' => $ticket]);
+            return response()->json([
+                'success' => true,
+                'status' => $ticket->status, 
+                'message' => 'Status updated successfully.'
+            ]);
         }
         return back();
     }
