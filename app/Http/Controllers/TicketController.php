@@ -106,7 +106,11 @@ class TicketController extends Controller
         $ticket->save();
         $ticket->load('agent');
         if ($request->ajax()) {
-            return response()->json(['success' => true, 'ticket' => $ticket]);
+            return response()->json([
+                'success' => true,
+                'ticket' => $ticket,
+                'agent_name' => $agent->name,
+            ]);
         }
         return back();
     }

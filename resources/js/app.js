@@ -39,52 +39,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Assign agent AJAX
-    let assignForm = document.querySelector(".assign-agent-form");
-    if (assignForm) {
-        assignForm.addEventListener("submit", function (e) {
-            e.preventDefault();
-            let btn = assignForm.querySelector("button[type=submit]");
-            let spinner = btn.querySelector(".spinner-border");
-            let feedback = document.getElementById("assign-feedback");
-            feedback.innerHTML = "";
-            btn.disabled = true;
-            if (spinner) spinner.classList.remove("d-none");
-            let formData = new FormData(assignForm);
-            fetch(assignForm.action, {
-                method: "POST",
-                headers: {
-                    "X-Requested-With": "XMLHttpRequest",
-                    "X-CSRF-TOKEN": assignForm.querySelector(
-                        'input[name="_token"]'
-                    ).value,
-                    Accept: "application/json",
-                },
-                body: formData,
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.success && data.ticket) {
-                        updateTicketDetails(data.ticket);
-                        feedback.classList.remove("alert-danger");
-                        feedback.classList.add("alert-info");
-                        feedback.textContent = "Ticket assigned successfully!";
-                        feedback.classList.remove("d-none");
-                    }
-                })
-                .catch(() => {
-                    feedback.classList.remove("alert-info");
-                    feedback.classList.add("alert-danger");
-                    feedback.textContent = "Failed to assign ticket.";
-                    feedback.classList.remove("d-none");
-                })
-                .finally(() => {
-                    btn.disabled = false;
-                    if (spinner) spinner.classList.add("d-none");
-                });
-        });
-    }
-
     // Add comment AJAX
     let commentForm = document.querySelector(".add-comment-form");
     if (commentForm) {
@@ -189,6 +143,52 @@ document.addEventListener("DOMContentLoaded", function () {
                     setTimeout(function () {
                         feedback.innerHTML = "";
                     }, 3000);
+                });
+        });
+    }
+
+    // Assign agent AJAX
+    let assignForm = document.querySelector(".assign-agent-form");
+    if (assignForm) {
+        assignForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            let btn = assignForm.querySelector("button[type=submit]");
+            let spinner = btn.querySelector(".spinner-border");
+            let feedback = document.getElementById("assign-feedback");
+            feedback.innerHTML = "";
+            btn.disabled = true;
+            if (spinner) spinner.classList.remove("d-none");
+            let formData = new FormData(assignForm);
+            fetch(assignForm.action, {
+                method: "POST",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRF-TOKEN": assignForm.querySelector(
+                        'input[name="_token"]'
+                    ).value,
+                    Accept: "application/json",
+                },
+                body: formData,
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.success && data.ticket) {
+                        updateTicketDetails(data.ticket);
+                        feedback.classList.remove("alert-danger");
+                        feedback.classList.add("alert-info");
+                        feedback.textContent = "Ticket assigned successfully!";
+                        feedback.classList.remove("d-none");
+                    }
+                })
+                .catch(() => {
+                    feedback.classList.remove("alert-info");
+                    feedback.classList.add("alert-danger");
+                    feedback.textContent = "Failed to assign ticket.";
+                    feedback.classList.remove("d-none");
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    if (spinner) spinner.classList.add("d-none");
                 });
         });
     }
