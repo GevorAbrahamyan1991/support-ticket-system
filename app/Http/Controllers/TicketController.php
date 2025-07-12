@@ -42,7 +42,10 @@ class TicketController extends Controller
         }
         $ticket->load('comments.user', 'customer', 'agent');
         if (request()->ajax()) {
-            return response()->json(['ticket' => $ticket]);
+            return response()->json([
+                'ticket' => $ticket,
+                'comments_html' => view('tickets.partials.comments', ['ticket' => $ticket])->render(),
+            ]);
         }
         return view('tickets.show', compact('ticket'));
     }
@@ -125,6 +128,10 @@ class TicketController extends Controller
             'user_id' => $user->id,
         ]);
         $ticket->comments()->save($comment);
+        
+        // Broadcast the new comment
+        event(new \App\Events\CommentAdded($comment));
+        
         SendTicketNotification::dispatch($ticket, 'replied');
         if ($request->ajax()) {
             $ticket->load('comments.user');
