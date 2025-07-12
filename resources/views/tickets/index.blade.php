@@ -46,8 +46,8 @@ $(function() {
     });
     $(document).on('click', '#tickets-list .pagination a', function(e) {
         e.preventDefault();
-        var url = $(this).attr('href');
-        var params = url.split('?')[1] || '';
+        let url = $(this).attr('href');
+        let params = url.split('?')[1] || '';
         fetchTickets(params);
     });
     function fetchTickets(params) {

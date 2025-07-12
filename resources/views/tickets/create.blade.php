@@ -40,9 +40,9 @@
 <script>
 $(document).on('submit', 'form#create-ticket-form', function(e) {
     e.preventDefault();
-    var form = $(this);
-    var btn = form.find('button[type=submit]');
-    var spinner = btn.find('.spinner-border');
+    let form = $(this);
+    let btn = form.find('button[type=submit]');
+    let spinner = btn.find('.spinner-border');
     btn.prop('disabled', true);
     spinner.removeClass('d-none');
     $('#global-loading').fadeIn(150);

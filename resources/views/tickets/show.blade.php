@@ -57,7 +57,10 @@
                     <textarea class="form-control @error('content') is-invalid @enderror" id="content" name="content" rows="3" required></textarea>
                     @error('content')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
-                <button type="submit" class="btn card-button w-100">Post Comment</button>
+                <button type="submit" class="btn card-button w-100">
+                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="comment-spinner"></span>
+                    Post Comment
+                </button>
             </form>
         </div>
     </div>
@@ -76,9 +79,9 @@ function updateTicketDetails(ticket) {
 
 $(document).on('submit', 'form.assign-agent-form', function(e) {
     e.preventDefault();
-    var form = $(this);
-    var btn = form.find('button[type=submit]');
-    var spinner = btn.find('.spinner-border');
+    let form = $(this);
+    let btn = form.find('button[type=submit]');
+    let spinner = btn.find('.spinner-border');
     btn.prop('disabled', true);
     spinner.removeClass('d-none');
     $('#global-loading').fadeIn(150);
@@ -97,9 +100,9 @@ $(document).on('submit', 'form.assign-agent-form', function(e) {
 
 $(document).on('submit', 'form.status-update-form', function(e) {
     e.preventDefault();
-    var form = $(this);
-    var btn = form.find('button[type=submit]');
-    var spinner = btn.find('.spinner-border');
+    let form = $(this);
+    let btn = form.find('button[type=submit]');
+    let spinner = btn.find('.spinner-border');
     btn.prop('disabled', true);
     spinner.removeClass('d-none');
     $('#global-loading').fadeIn(150);
@@ -118,9 +121,11 @@ $(document).on('submit', 'form.status-update-form', function(e) {
 
 $(document).on('submit', 'form.add-comment-form', function(e) {
     e.preventDefault();
-    var form = $(this);
-    var btn = form.find('button[type=submit]');
+    let form = $(this);
+    let btn = form.find('button[type=submit]');
+    let spinner = btn.find('.spinner-border');
     btn.prop('disabled', true);
+    spinner.removeClass('d-none');
     $('#global-loading').fadeIn(150);
     $.post(form.attr('action'), form.serialize(), function(data) {
         if (data.comments_html) {
@@ -131,6 +136,7 @@ $(document).on('submit', 'form.add-comment-form', function(e) {
         alert('Failed to add comment.');
     }).always(function() {
         btn.prop('disabled', false);
+        spinner.addClass('d-none');
         $('#global-loading').fadeOut(150);
     });
 });
