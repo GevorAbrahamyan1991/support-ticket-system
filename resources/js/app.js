@@ -39,7 +39,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Add comment AJAX
     let commentForm = document.querySelector(".add-comment-form");
     if (commentForm) {
         commentForm.addEventListener("submit", function (e) {
@@ -64,7 +63,6 @@ document.addEventListener("DOMContentLoaded", function () {
             })
                 .then((response) => response.json())
                 .then((data) => {
-                    // Only reset the form and show feedback; let real-time event update comments section
                     commentForm.reset();
                     if (data.success) {
                         feedback.innerHTML =
@@ -95,7 +93,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Status change (no button, just select)
     let select = document.getElementById("status-select");
     let form = document.getElementById("status-update-form");
     if (select && form) {
@@ -147,7 +144,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Assign agent AJAX
     let assignForm = document.querySelector(".assign-agent-form");
     if (assignForm) {
         assignForm.addEventListener("submit", function (e) {
@@ -193,7 +189,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Real-time comments
     const ticketId = document.getElementById("ticket-page")?.dataset.ticketId;
     if (window.Echo && ticketId) {
         window.Echo.private(`ticket.${ticketId}`).listen(
@@ -206,7 +201,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     .then((response) => response.json())
                     .then((data) => {
                         if (data.comments_html) {
-                            // Replace jQuery with vanilla JS
                             let commentsSection =
                                 document.getElementById("comments-section");
                             if (commentsSection) {
@@ -219,13 +213,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// --- Ticket Filter & Pagination AJAX (Tickets Index Page) ---
 document.addEventListener("DOMContentLoaded", function () {
     const filterForm = document.getElementById("filter-form");
     const ticketsList = document.getElementById("tickets-list");
     const ticketsLoading = document.getElementById("tickets-loading");
     if (filterForm && ticketsList && ticketsLoading) {
-        // Helper to serialize form data
         function serializeForm(form) {
             const params = new URLSearchParams();
             for (const el of form.elements) {
@@ -239,7 +231,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             return params.toString();
         }
-        // Fetch tickets via AJAX
+
         function fetchTickets(params) {
             ticketsLoading.style.display = "block";
             window.axios
@@ -262,18 +254,18 @@ document.addEventListener("DOMContentLoaded", function () {
                     ticketsLoading.style.display = "none";
                 });
         }
-        // On form submit
+
         filterForm.addEventListener("submit", function (e) {
             e.preventDefault();
             fetchTickets(serializeForm(filterForm));
         });
-        // On filter input change
+
         filterForm.querySelectorAll("select, input").forEach(function (el) {
             el.addEventListener("change", function () {
                 filterForm.dispatchEvent(new Event("submit"));
             });
         });
-        // On pagination click (event delegation)
+
         ticketsList.addEventListener("click", function (e) {
             const target = e.target.closest("a");
             if (target && target.closest(".pagination")) {
@@ -285,7 +277,57 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// Helper for updating ticket details
+document.addEventListener("DOMContentLoaded", function () {
+    const assignSelect = document.getElementById("assign-agent-select");
+    const assignForm = document.querySelector(".assign-agent-form");
+    if (assignSelect && assignForm) {
+        assignSelect.addEventListener("change", function () {
+            if (!assignSelect.value) return;
+            let btn = assignForm.querySelector("button[type=submit]");
+            let feedback = document.getElementById("assign-feedback");
+            feedback.innerHTML = "";
+            let formData = new FormData(assignForm);
+            formData.set("agent_id", assignSelect.value);
+            if (btn) btn.disabled = true;
+            fetch(assignForm.action, {
+                method: "POST",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRF-TOKEN": assignForm.querySelector(
+                        'input[name="_token"]'
+                    ).value,
+                    Accept: "application/json",
+                },
+                body: formData,
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.success && data.ticket) {
+                        updateTicketDetails(data.ticket);
+                        feedback.classList.remove("alert-danger");
+                        feedback.classList.add("alert-info");
+                        feedback.textContent = "Ticket assigned successfully!";
+                        feedback.classList.remove("d-none");
+                    } else if (data.message) {
+                        feedback.classList.remove("alert-info");
+                        feedback.classList.add("alert-danger");
+                        feedback.textContent = data.message;
+                        feedback.classList.remove("d-none");
+                    }
+                })
+                .catch(() => {
+                    feedback.classList.remove("alert-info");
+                    feedback.classList.add("alert-danger");
+                    feedback.textContent = "Failed to assign ticket.";
+                    feedback.classList.remove("d-none");
+                })
+                .finally(() => {
+                    if (btn) btn.disabled = false;
+                });
+        });
+    }
+});
+
 function updateTicketDetails(ticket) {
     let badge = "";
     if (ticket.status === "open") {

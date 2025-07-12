@@ -59,49 +59,4 @@
 @endsection
 
 @push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    let assignSelect = document.getElementById('assign-agent-select');
-    let assignForm = document.querySelector('.assign-agent-form');
-    if (assignSelect && assignForm) {
-        assignSelect.addEventListener('change', function () {
-            if (!assignSelect.value) return;
-            let btn = assignForm.querySelector('button[type=submit]');
-            let feedback = document.getElementById('assign-feedback');
-            feedback.innerHTML = '';
-            let formData = new FormData(assignForm);
-            fetch(assignForm.action, {
-                method: 'POST',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': assignForm.querySelector('input[name="_token"]').value,
-                    'Accept': 'application/json',
-                },
-                body: formData,
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success && data.ticket) {
-                        updateTicketDetails(data.ticket);
-                        feedback.classList.remove('alert-danger');
-                        feedback.classList.add('alert-info');
-                        feedback.textContent = 'Ticket assigned successfully!';
-                        feedback.classList.remove('d-none');
-                    } else if (data.message) {
-                        feedback.classList.remove('alert-info');
-                        feedback.classList.add('alert-danger');
-                        feedback.textContent = data.message;
-                        feedback.classList.remove('d-none');
-                    }
-                })
-                .catch(() => {
-                    feedback.classList.remove('alert-info');
-                    feedback.classList.add('alert-danger');
-                    feedback.textContent = 'Failed to assign ticket.';
-                    feedback.classList.remove('d-none');
-                });
-        });
-    }
-});
-</script>
 @endpush 
