@@ -31,7 +31,7 @@
                             </li>
                         @elseif(auth()->user()->isCustomer())
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('tickets.index') }}">Tickets</a>
+                                <a class="link" href="{{ route('tickets.index') }}">Tickets</a>
                             </li>
                         @endif
                         <li class="nav-item d-flex align-items-center">
