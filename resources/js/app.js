@@ -219,6 +219,72 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+// --- Ticket Filter & Pagination AJAX (Tickets Index Page) ---
+document.addEventListener("DOMContentLoaded", function () {
+    const filterForm = document.getElementById("filter-form");
+    const ticketsList = document.getElementById("tickets-list");
+    const ticketsLoading = document.getElementById("tickets-loading");
+    if (filterForm && ticketsList && ticketsLoading) {
+        // Helper to serialize form data
+        function serializeForm(form) {
+            const params = new URLSearchParams();
+            for (const el of form.elements) {
+                if (!el.name || el.disabled) continue;
+                if (
+                    (el.type === "checkbox" || el.type === "radio") &&
+                    !el.checked
+                )
+                    continue;
+                params.append(el.name, el.value);
+            }
+            return params.toString();
+        }
+        // Fetch tickets via AJAX
+        function fetchTickets(params) {
+            ticketsLoading.style.display = "block";
+            window.axios
+                .get(
+                    filterForm.getAttribute("action") ||
+                        window.location.pathname,
+                    {
+                        params: params
+                            ? Object.fromEntries(new URLSearchParams(params))
+                            : {},
+                        headers: { Accept: "application/json" },
+                    }
+                )
+                .then(function (response) {
+                    if (response.data && response.data.html) {
+                        ticketsList.innerHTML = response.data.html;
+                    }
+                })
+                .finally(function () {
+                    ticketsLoading.style.display = "none";
+                });
+        }
+        // On form submit
+        filterForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            fetchTickets(serializeForm(filterForm));
+        });
+        // On filter input change
+        filterForm.querySelectorAll("select, input").forEach(function (el) {
+            el.addEventListener("change", function () {
+                filterForm.dispatchEvent(new Event("submit"));
+            });
+        });
+        // On pagination click (event delegation)
+        ticketsList.addEventListener("click", function (e) {
+            const target = e.target.closest("a");
+            if (target && target.closest(".pagination")) {
+                e.preventDefault();
+                const url = new URL(target.href);
+                fetchTickets(url.search.slice(1));
+            }
+        });
+    }
+});
+
 // Helper for updating ticket details
 function updateTicketDetails(ticket) {
     let badge = "";

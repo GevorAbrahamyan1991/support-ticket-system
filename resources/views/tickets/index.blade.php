@@ -35,38 +35,5 @@
 @endsection
 
 @push('scripts')
-<script>
-$(function() {
-    $('#filter-form').on('submit', function(e) {
-        e.preventDefault();
-        fetchTickets($(this).serialize());
-    });
-    $('#filter-form select, #filter-form input').on('change', function() {
-        $('#filter-form').submit();
-    });
-    $(document).on('click', '#tickets-list .pagination a', function(e) {
-        e.preventDefault();
-        let url = $(this).attr('href');
-        let params = url.split('?')[1] || '';
-        fetchTickets(params);
-    });
-    function fetchTickets(params) {
-        $('#tickets-loading').show();
-        $.ajax({
-            url: '{{ route('tickets.index') }}' + (params ? '?' + params : ''),
-            type: 'GET',
-            dataType: 'json',
-            success: function(data) {
-                $('#tickets-list').html(data.html ?? renderTickets(data.tickets));
-            },
-            complete: function() {
-                $('#tickets-loading').hide();
-            }
-        });
-    }
-    function renderTickets(tickets) {
-        return '';
-    }
-});
-</script>
+<!-- Ticket filter and pagination logic moved to app.js -->
 @endpush 
