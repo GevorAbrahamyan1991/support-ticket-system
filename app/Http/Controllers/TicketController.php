@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Ticket;
 use App\Models\Comment;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Jobs\SendTicketNotification;
@@ -13,6 +14,7 @@ class TicketController extends Controller
 {
     public function index()
     {
+        /** @var User|null $user */
         $user = Auth::user();
         $query = Ticket::with('customer', 'agent');
         if (!$user->isAgent()) {
@@ -36,18 +38,20 @@ class TicketController extends Controller
 
     public function show(Ticket $ticket)
     {
+        /** @var User|null $user */
         $user = Auth::user();
         if ($user->isCustomer() && $ticket->customer_id !== $user->id) {
             abort(403);
         }
         $ticket->load('comments.user', 'customer', 'agent');
+        $agents = \App\Models\User::agents()->get();
         if (request()->ajax()) {
             return response()->json([
                 'ticket' => $ticket,
                 'comments_html' => view('tickets.partials.comments', ['ticket' => $ticket])->render(),
             ]);
         }
-        return view('tickets.show', compact('ticket'));
+        return view('tickets.show', compact('ticket', 'agents'));
     }
 
     public function create()
@@ -91,13 +95,17 @@ class TicketController extends Controller
         return redirect()->route('tickets.show', $ticket);
     }
 
-    public function assign(Ticket $ticket)
+    public function assign(Request $request, Ticket $ticket)
     {
         $this->authorizeRole('agent');
-        $ticket->agent_id = Auth::id();
+        $request->validate([
+            'agent_id' => 'required|exists:users,id',
+        ]);
+        $agent = \App\Models\User::agents()->findOrFail($request->agent_id);
+        $ticket->agent_id = $agent->id;
         $ticket->save();
         $ticket->load('agent');
-        if (request()->ajax()) {
+        if ($request->ajax()) {
             return response()->json(['success' => true, 'ticket' => $ticket]);
         }
         return back();
@@ -118,6 +126,7 @@ class TicketController extends Controller
 
     public function addComment(Request $request, Ticket $ticket)
     {
+        /** @var User|null $user */
         $user = Auth::user();
         if ($user->isCustomer() && $ticket->customer_id !== $user->id) {
             abort(403);

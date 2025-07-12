@@ -15,12 +15,20 @@
             <tr>
                 <td>{{ $ticket->id }}</td>
                 <td>{{ $ticket->title }}</td>
-                <td>{{ ucfirst($ticket->status) }}</td>
+                <td>
+                    @if($ticket->status == 'open')
+                        <span class="badge bg-success"><i class="bi bi-unlock"></i> Open</span>
+                    @elseif($ticket->status == 'in_progress')
+                        <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i> In Progress</span>
+                    @elseif($ticket->status == 'closed')
+                        <span class="badge bg-secondary"><i class="bi bi-lock"></i> Closed</span>
+                    @endif
+                </td>
                 <td>{{ $ticket->category }}</td>
                 <td>{{ $ticket->customer->name ?? '-' }}</td>
                 <td>{{ $ticket->agent->name ?? '-' }}</td>
                 <td>
-                    <a href="{{ route('tickets.show', $ticket) }}" class="btn btn-sm btn-info">View</a>
+                    <a href="{{ route('tickets.show', $ticket) }}" class="btn btn-sm btn-info"><i class="bi bi-eye"></i> View</a>
                 </td>
             </tr>
         @empty

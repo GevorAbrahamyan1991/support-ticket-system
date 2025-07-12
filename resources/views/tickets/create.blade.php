@@ -26,8 +26,8 @@
                         @error('description')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
                     <button type="submit" class="btn card-button w-100">
+                        <i class="bi bi-send"></i> Submit Ticket
                         <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="create-ticket-spinner"></span>
-                        Submit Ticket
                     </button>
                 </form>
             </div>

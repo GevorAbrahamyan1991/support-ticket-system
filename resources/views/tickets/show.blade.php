@@ -9,15 +9,24 @@
     </div>
     <div class="card mb-3">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <span><strong>{{ $ticket->title }}</strong> ({{ ucfirst($ticket->status) }})</span>
+            <span><strong>{{ $ticket->title }}</strong></span>
             @if(auth()->user()->isAgent() && !$ticket->agent_id)
                 <form method="POST" action="{{ route('tickets.assign', $ticket) }}" class="d-inline assign-agent-form">
                     @csrf
-                    <button type="submit" class="btn btn-sm btn-success">
-                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="assign-spinner"></span>
-                        Assign to Me
-                    </button>
+                    <div class="input-group input-group-sm mb-2">
+                        <select name="agent_id" class="form-select" required>
+                            <option value="">Assign to agent...</option>
+                            @foreach($agents as $agent)
+                                <option value="{{ $agent->id }}" @if(auth()->user()->id == $agent->id) selected @endif>{{ $agent->name }} ({{ $agent->email }})</option>
+                            @endforeach
+                        </select>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-person-plus"></i> Assign
+                            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="assign-spinner"></span>
+                        </button>
+                    </div>
                 </form>
+                <div class="alert alert-info d-none mt-2" id="assign-feedback"></div>
             @endif
         </div>
         <div class="card-body">
@@ -37,8 +46,8 @@
                         <option value="closed" @if($ticket->status=='closed') selected @endif>Closed</option>
                     </select>
                     <button type="submit" class="btn btn-sm card-button">
+                        <i class="bi bi-arrow-repeat"></i> Update Status
                         <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="status-spinner"></span>
-                        Update Status
                     </button>
                 </form>
             @endif
@@ -58,8 +67,8 @@
                     @error('content')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
                 <button type="submit" class="btn card-button w-100">
+                    <i class="bi bi-chat-dots"></i> Post Comment
                     <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="comment-spinner"></span>
-                    Post Comment
                 </button>
             </form>
         </div>
@@ -82,15 +91,21 @@ $(document).on('submit', 'form.assign-agent-form', function(e) {
     let form = $(this);
     let btn = form.find('button[type=submit]');
     let spinner = btn.find('.spinner-border');
+    let feedback = $('#assign-feedback');
     btn.prop('disabled', true);
     spinner.removeClass('d-none');
     $('#global-loading').fadeIn(150);
     $.post(form.attr('action'), form.serialize(), function(data) {
         if (data.success && data.ticket) {
             updateTicketDetails(data.ticket);
+            feedback.removeClass('d-none alert-danger').addClass('alert-info').text('Ticket assigned successfully!');
         }
-    }).fail(function() {
-        alert('Failed to assign ticket.');
+    }).fail(function(xhr) {
+        let msg = 'Failed to assign ticket.';
+        if (xhr.responseJSON && xhr.responseJSON.message) {
+            msg = xhr.responseJSON.message;
+        }
+        feedback.removeClass('d-none alert-info').addClass('alert-danger').text(msg);
     }).always(function() {
         btn.prop('disabled', false);
         spinner.addClass('d-none');

@@ -44,4 +44,9 @@ class User extends Authenticatable
     {
         return $this->role === 'customer';
     }
+
+    public function scopeAgents($query)
+    {
+        return $query->where('role', 'agent');
+    }
 }

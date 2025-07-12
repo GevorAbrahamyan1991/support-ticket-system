@@ -4,9 +4,9 @@
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>Tickets</h2>
+    <h2><i class="bi bi-card-list"></i> Tickets</h2>
     @if(auth()->user()->isCustomer())
-        <a href="{{ route('tickets.create') }}" class="btn btn-primary">New Ticket</a>
+        <a href="{{ route('tickets.create') }}" class="btn btn-primary"><i class="bi bi-plus-circle"></i> New Ticket</a>
     @endif
 </div>
 <form id="filter-form" method="GET" class="row g-3 mb-3">
@@ -22,8 +22,8 @@
         <input type="text" name="category" class="form-control" placeholder="Category" value="{{ request('category') }}">
     </div>
     <div class="col-md-3">
-        <button type="submit" class="btn btn-secondary">Filter</button>
-        <a href="{{ route('tickets.index') }}" class="btn btn-danger">Reset</a>
+        <button type="submit" class="btn btn-secondary"><i class="bi bi-funnel"></i> Filter</button>
+        <a href="{{ route('tickets.index') }}" class="btn btn-danger"><i class="bi bi-x-circle"></i> Reset</a>
     </div>
 </form>
 <div id="tickets-loading" class="text-center my-3" style="display:none;">
